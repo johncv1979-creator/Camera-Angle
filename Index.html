@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Camera & Subject Azimuth Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      width: 460px;
+      text-align: center;
+    }
+    h2 { font-size: 24px; margin-bottom: 20px; }
+    label { font-size: 16px; display: block; margin: 12px 0 6px; text-align: left; }
+    input, select {
+      font-size: 16px; padding: 10px; width: 100%;
+      margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px;
+    }
+    input[type=range] { width: 100%; }
+    button {
+      font-size: 16px; padding: 12px;
+      background: #0077cc; color: white; border: none; border-radius: 8px;
+      cursor: pointer; width: 100%; margin-top: 10px;
+    }
+    button:hover { background: #005fa3; }
+    .output {
+      margin-top: 20px; padding: 15px; border-radius: 8px;
+      background: #f8f9fa; font-size: 16px; text-align: left; border: 1px solid #ddd;
+    }
+    .error { color: red; margin-top: 10px; }
+    .slider-container { display: none; margin-bottom: 20px; }
+    .hint { font-size: 14px; color: #555; margin-top: -8px; margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Camera & Subject Azimuth Calculator</h2>
+
+    <label for="sunAzimuth">Enter Sun Azimuth (°):</label>
+    <input type="number" id="sunAzimuth" placeholder="e.g., 270">
+
+    <label for="option">Select Lighting Option:</label>
+    <select id="option" onchange="toggleSlider()">
+      <option value="silhouette">Silhouette (Camera faces sun)</option>
+      <option value="halo">Halo / Edge Glow</option>
+      <option value="rimlight">Classic Rim</option>
+      <option value="threequarter">Three-Quarter Back</option>
+      <option value="keylight">Sun as Keylight</option>
+      <option value="sidelight">Side Light</option>
+    </select>
+
+    <div class="slider-container" id="sliderBox">
+      <label for="offsetRange">Offset Angle (°): <span id="offsetValue">30</span></label>
+      <input type="range" id="offsetRange" min="5" max="120" value="30" oninput="updateSliderValue()">
+      <div class="hint" id="rangeHint"></div>
+      <div class="hint" id="elevationHint"></div>
+    </div>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div id="error" class="error"></div>
+    <div class="output" id="result">Results will appear here.</div>
+  </div>
+
+  <script>
+    function normalize(angle) {
+      return (angle % 360 + 360) % 360;
+    }
+
+    // ✅ Defaults + Elevation ranges added
+    const defaults = {
+      halo: { value: 15, range: "Ideal Range: 10–20°", elevation: "Best Sun Elevation: 5–20°" },
+      rimlight: { value: 40, range: "Ideal Range: 30–45°", elevation: "Best Sun Elevation: 10–30°" },
+      threequarter: { value: 70, range: "Ideal Range: 60–75°", elevation: "Best Sun Elevation: 15–35°" },
+      keylight: { value: 35, range: "Ideal Range: 30–45° (from front)", elevation: "Best Sun Elevation: 10–25°" },
+      sidelight: { value: 90, range: "Ideal Range: 85–95°", elevation: "Best Sun Elevation: 15–35°" },
+      silhouette: { value: 0, range: "Offset not applicable", elevation: "Best Sun Elevation: 0–15°" }
+    };
+
+    function updateSliderValue() {
+      document.getElementById("offsetValue").textContent = document.getElementById("offsetRange").value;
+    }
+
+    function toggleSlider() {
+      const option = document.getElementById("option").value;
+      const sliderBox = document.getElementById("sliderBox");
+      const rangeHint = document.getElementById("rangeHint");
+      const elevationHint = document.getElementById("elevationHint");
+      const slider = document.getElementById("offsetRange");
+
+      if (defaults[option]) {
+        if (option === "silhouette") {
+          sliderBox.style.display = "none"; // no offset for silhouette
+        } else {
+          sliderBox.style.display = "block";
+          slider.value = defaults[option].value;
+          document.getElementById("offsetValue").textContent = slider.value;
+        }
+        rangeHint.textContent = defaults[option].range;
+        elevationHint.textContent = defaults[option].elevation;
+      }
+    }
+
+    function calculate() {
+      const sunInput = document.getElementById("sunAzimuth").value;
+      const sun = parseFloat(sunInput);
+      const option = document.getElementById("option").value;
+      const offset = parseInt(document.getElementById("offsetRange").value);
+      const errorBox = document.getElementById("error");
+      let cameras = [], subjects = [], labels = [];
+
+      if (isNaN(sun)) {
+        errorBox.textContent = "⚠️ Please enter a valid Sun Azimuth.";
+        document.getElementById("result").innerHTML = "No results yet.";
+        return;
+      }
+      errorBox.textContent = "";
+
+      switch(option) {
+        case "silhouette":
+          cameras = [normalize(sun)];
+          subjects = [normalize(sun + 180)];
+          labels = ["Center (Facing Sun)"];
+          break;
+
+        case "halo":
+        case "rimlight":
+        case "threequarter":
+        case "sidelight":
+          cameras = [normalize(sun + offset), normalize(sun - offset)];
+          subjects = cameras.map(c => normalize(c + 180));
+          labels = [`Right of Sun (~${offset}°)`, `Left of Sun (~${offset}°)`];
+          break;
+
+        case "keylight":
+          const base = normalize(sun + 180);
+          cameras = [normalize(base - offset), normalize(base + offset)];
+          subjects = [normalize(sun), normalize(sun)];
+          labels = [`Front (Right Offset ~${offset}°)`, `Front (Left Offset ~${offset}°)`];
+          break;
+      }
+
+      let outputHTML = `<strong>Sun Azimuth:</strong> ${sun}°<br><br>`;
+      cameras.forEach((cam, i) => {
+        outputHTML += `<div><strong>${labels[i]}:</strong><br>
+          Camera Azimuth: ${cam}°<br>
+          Subject Azimuth: ${subjects[i]}°</div><br>`;
+      });
+
+      document.getElementById("result").innerHTML = outputHTML;
+    }
+  </script>
+</body>
+</html>
