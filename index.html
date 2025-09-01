@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Camera & Subject Azimuth Calculator</title>
+
+  <!-- ✅ Link to manifest.json -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- ✅ Theme color for Android status bar -->
+  <meta name="theme-color" content="#0077cc">
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -74,11 +81,18 @@
   </div>
 
   <script>
+    // ✅ Register service worker
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.log("SW registration failed:", err));
+    }
+
     function normalize(angle) {
       return (angle % 360 + 360) % 360;
     }
 
-    // ✅ Defaults + Elevation ranges added
+    // ✅ Defaults + Elevation ranges
     const defaults = {
       halo: { value: 15, range: "Ideal Range: 10–20°", elevation: "Best Sun Elevation: 5–20°" },
       rimlight: { value: 40, range: "Ideal Range: 30–45°", elevation: "Best Sun Elevation: 10–30°" },
@@ -101,7 +115,7 @@
 
       if (defaults[option]) {
         if (option === "silhouette") {
-          sliderBox.style.display = "none"; // no offset for silhouette
+          sliderBox.style.display = "none";
         } else {
           sliderBox.style.display = "block";
           slider.value = defaults[option].value;
