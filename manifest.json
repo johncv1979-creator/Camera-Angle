@@ -1,14 +1,11 @@
 {
-  "id": "camera-angle",
   "name": "Camera Angle",
-  "short_name": "Camera Angle",
-  "description": "A simple PWA tool to calculate camera and subject azimuth based on sun azimuth and lighting options.",
-  "start_url": "index.html",
-  "scope": "./",
+  "short_name": "CamAngle",
+  "description": "A simple tool to calculate camera & subject azimuths for sun lighting setups.",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#eef2f5",
+  "background_color": "#f2f6fa",
   "theme_color": "#0077cc",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
