@@ -1,6 +1,7 @@
 {
-  "name": "Camera & Subject Azimuth Calculator",
-  "short_name": "AzimuthCalc",
+  "id": "camera-angle",
+  "name": "Camera Angle",
+  "short_name": "Camera Angle",
   "description": "A simple PWA tool to calculate camera and subject azimuth based on sun azimuth and lighting options.",
   "start_url": "index.html",
   "scope": "./",
