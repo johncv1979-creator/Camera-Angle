@@ -2,24 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Camera & Subject Azimuth Calculator</title>
+  <title>Camera Angle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f2f6fa;
       margin: 0;
       padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
     }
 
     .app-header {
       background: #0077cc;
       color: white;
-      padding: 15px;
+      padding: 16px;
       text-align: center;
       font-size: 20px;
       font-weight: bold;
@@ -30,11 +27,12 @@
     .container {
       background: white;
       padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 95%;
-      max-width: 500px;
-      margin: 20px auto;
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      margin-top: 10px;
     }
 
     h2 {
@@ -47,7 +45,7 @@
     label {
       font-size: 15px;
       display: block;
-      margin: 12px 0 6px;
+      margin: 10px 0 5px;
       font-weight: bold;
       color: #444;
     }
@@ -95,8 +93,8 @@
     }
 
     .output div {
-      padding: 8px;
-      margin-bottom: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
       background: #eef6ff;
       border-radius: 8px;
       border: 1px solid #cce0ff;
@@ -118,10 +116,27 @@
       margin-top: -4px;
       margin-bottom: 6px;
     }
+
+    /* 📱 Mobile adjustments */
+    @media (max-width: 600px) {
+      .container {
+        border-radius: 0;
+        padding: 15px;
+      }
+      h2 {
+        font-size: 16px;
+      }
+      label, input, select, button {
+        font-size: 16px;
+      }
+      button {
+        padding: 12px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="app-header">Azimuth Calculator</div>
+  <div class="app-header">Camera Angle</div>
 
   <div class="container">
     <h2>Camera & Subject Setup</h2>
@@ -157,7 +172,6 @@
       return (angle % 360 + 360) % 360;
     }
 
-    // ✅ Defaults with azimuth + elevation hints
     const defaults = {
       halo: { value: 15, range: "Ideal Range: 10–20°", elevation: "Best Sun Elevation: 5–20°" },
       rimlight: { value: 40, range: "Ideal Range: 30–45°", elevation: "Best Sun Elevation: 10–30°" },
