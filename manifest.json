@@ -2,7 +2,7 @@
   "name": "Camera Angle",
   "short_name": "CamAngle",
   "description": "A simple tool to calculate camera & subject azimuths for sun lighting setups.",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#f2f6fa",
   "theme_color": "#0077cc",
